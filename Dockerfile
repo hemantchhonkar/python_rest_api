@@ -7,13 +7,13 @@ FROM python:3.8
 ENV PYTHONUNBUFFERED 1
 
 # create root directory for our project in the container
-RUN mkdir /EXS-BACKEND
+RUN mkdir /python_rest_api
 
 # Set the working directory to /music_service
-WORKDIR /EXS-BACKEND
+WORKDIR /python_rest_api
 
 # Copy the current directory contents into the container at /music_service
-ADD . /EXS-BACKEND/
+ADD . /python_rest_api/
 
 # Install any needed packages specified in requirements.txt
 RUN pip install -r express_stores/deployment/requirements.txt

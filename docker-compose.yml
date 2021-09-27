@@ -2,7 +2,7 @@ version: '3'
 
 services:
   web:
-    image: ${image_tag}
+    image: ${image_name}
     #command: touch /var/log/expressstores/app.log
     command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     container_name: python_rest_api

@@ -16,7 +16,7 @@ WORKDIR /python_rest_api
 ADD . /python_rest_api/
 
 # Install any needed packages specified in requirements.txt
-RUN pip install -r express_stores/deployment/requirements.txt
+RUN pip install -r requirements.txt
 RUN pip install https://github.com/darklow/django-suit/tarball/v2
 RUN mkdir -p /var/log/expressstores
 RUN cd /var/log/expressstores

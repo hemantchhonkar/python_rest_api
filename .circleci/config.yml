@@ -11,12 +11,13 @@ jobs:
   test-and-build-dev:
     docker:
       - image: circleci/python:3.8
+        environment:
+          MIX_ENV: prod
     working_directory: ~/repo
     steps:
       - checkout
       - restore_cache:
          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
-
       # build and push Docker image
       - run:
           command: |
@@ -33,3 +34,13 @@ workflows:
   test-and-build:
     jobs:
       - test-and-build-dev
+      - aws-ecr/build-and-push-image:
+          repo: "python_rest_api"
+          tag: "${CIRCLE_BRANCH}_${CIRCLE_SHA1},${CIRCLE_BRANCH}_latest"
+          requires:
+            - test-and-build-dev
+          filters:
+            branches:
+              only:
+                - main
+                - develop

@@ -4,8 +4,8 @@ orbs:
   # Orb commands and jobs help you with common scripting around a language/tool
   # so you dont have to copy and paste it everywhere.
   # See the orb documentation here: https://circleci.com/developer/orbs/orb/circleci/python
-  aws-ecr: circleci/aws-ecr@6.9.1
-  aws-ecs: circleci/aws-ecs@1.2.0
+  aws-ecr: circleci/aws-ecr@7.2.0
+  aws-ecs: circleci/aws-ecs@2.2.1
 jobs:
   test-and-build-dev:
     docker:

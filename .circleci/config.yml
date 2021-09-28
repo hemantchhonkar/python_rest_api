@@ -46,7 +46,7 @@ workflows:
           family: "python_api_task_definition"
           cluster-name: "PythonRestApiProdClus"
           service-name: "python_api_service"
-          container-image-name-updates: "container=python_api_container_prod,tag=${CIRCLE_BRANCH}_latest"
+          container-image-name-updates: "container=python_api_container_prod,tag=${CIRCLE_BRANCH}_latest"Z
           filters:
             branches:
               only:
@@ -58,8 +58,7 @@ workflows:
           family: "python_api_task_definition"
           cluster-name: "PythonRestApiProdClus"
           service-name: "python_api_service"
-          container-image-name-updates: "container=python_api_service,tag=${CIRCLE_BRANCH}_latest"
-          force-new-deployment: true
+          container-image-name-updates: "container=python_api_container_prod,tag=${CIRCLE_BRANCH}_latest"
           filters:
             branches:
               only:
@@ -79,7 +78,7 @@ workflows:
           family: "python_api_task_definition"
           cluster-name: "PythonRestApiProdClus"
           service-name: "python_api_service"
-          container-image-name-updates: "container=python_api_service,tag=${CIRCLE_BRANCH}_latest"
+          container-image-name-updates: "container=python_api_container_prod,tag=${CIRCLE_BRANCH}_latest"
           filters:
             branches:
               only:

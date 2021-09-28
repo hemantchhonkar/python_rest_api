@@ -51,7 +51,7 @@ workflows:
             branches:
               only:
                 - develop
-      - aws-ecs/deploy-service-update:
+      - aws-ecs/deploy-service-update-staging:
           name: deploy-staging
           requires:
             - aws-ecr/build-and-push-image
@@ -67,6 +67,7 @@ workflows:
           type: approval
           requires:
             - aws-ecr/build-and-push-image
+            - aws-ecs/deploy-service-update-staging
           filters:
             branches:
               only:

@@ -33,7 +33,7 @@ workflows:
           repo: "python_rest_api"
           tag: "${CIRCLE_BRANCH}_latest"
           requires:
-            - test-and-build-dev
+            - test-and-build
           filters:
             branches:
               only:

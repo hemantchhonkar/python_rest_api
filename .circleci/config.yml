@@ -59,6 +59,8 @@ workflows:
           cluster-name: "PythonRestApiProdClus"
           service-name: "python_api_service"
           container-image-name-updates: "container=python_api_container_prod,tag=${CIRCLE_BRANCH}_latest"
+          force-new-deployment: true
+          verify-revision-is-deployed: true
           filters:
             branches:
               only:

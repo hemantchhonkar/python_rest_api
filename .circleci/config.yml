@@ -43,7 +43,7 @@ workflows:
           name: deploy-production
           requires:
             - aws-ecr/build-and-push-image
-          family: "python_rest_api_task:3"
+          family: "python_rest_api_task"
           cluster-name: "PythonRestApiProdClus"
           service-name: "python_rest_api_service"
           container-image-name-updates: "container=python_rest_api_container_prod,tag=${CIRCLE_BRANCH}_latest"

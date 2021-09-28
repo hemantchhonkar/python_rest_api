@@ -1,0 +1,27 @@
+version: 2.1
+orbs:
+  # The python orb contains a set of prepackaged CircleCI configuration you can use repeatedly in your configuration files
+  # Orb commands and jobs help you with common scripting around a language/tool
+  # so you dont have to copy and paste it everywhere.
+  # See the orb documentation here: https://circleci.com/developer/orbs/orb/circleci/python
+  python: circleci/python@1.2
+  aws-ecr: circleci/aws-ecr@6.9.1
+  aws-ecs: circleci/aws-ecs@1.2.0
+jobs:
+  test-and-build-dev:
+    docker:
+      - image: python:3.8
+        environment:
+          MIX_ENV: dev
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run: docker build . python_test:1.1
+      - store_test_results:
+          path: _build/test/lib/simple_plug_server
+
+workflows:
+  version: 2
+  test-and-build:
+    jobs:
+      - test-and-build-dev

@@ -1,13 +1,23 @@
-FROM python:3.7
+ # The first instruction is what image we want to base our container on
+# We Use an official Python runtime as a parent image
+FROM python:3.8
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-    && rm -rf /var/lib/apt/lists/*
+# The enviroment variable ensures that the python output is set straight
+# to the terminal with out buffering it first
+ENV PYTHONUNBUFFERED 1
 
-WORKDIR /usr/src/app
-COPY requirements.txt ./
+# create root directory for our project in the container
+RUN mkdir /python_rest_api
+
+# Set the working directory to /music_service
+WORKDIR /python_rest_api
+
+# Copy the current directory contents into the container at /music_service
+ADD . /python_rest_api/
+
+# Install any needed packages specified in requirements.txt
 RUN pip install -r requirements.txt
-COPY . .
-
-EXPOSE 8000
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+RUN pip install https://github.com/darklow/django-suit/tarball/v2
+RUN mkdir -p /var/log/python_rest_api
+RUN cd /var/log/python_rest_api
+RUN touch app.log

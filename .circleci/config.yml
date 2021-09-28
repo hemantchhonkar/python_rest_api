@@ -46,7 +46,7 @@ workflows:
           family: "python_api_task_definition"
           cluster-name: "PythonRestApiProdClus"
           service-name: "python_api_service"
-          container-image-name-updates: "container=python_api_container_prod,tag=${CIRCLE_BRANCH}_latest"Z
+          container-image-name-updates: "container=python_api_container_prod,tag=${CIRCLE_BRANCH}_latest"
           filters:
             branches:
               only:

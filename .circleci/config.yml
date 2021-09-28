@@ -1,85 +1,87 @@
-version: 2.1
-orbs:
-  aws-ecr: circleci/aws-ecr@7.2.0
-  aws-ecs: circleci/aws-ecs@2.2.1
+version: 2
 jobs:
-  test-and-build:
+  build:  
     docker:
       - image: circleci/python:3.8
-        environment:
-          MIX_ENV: prod
-    working_directory: ~/repo
     steps:
       - checkout
-      - restore_cache:
-         key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
-      # build and push Docker image
+      - setup_remote_docker
       - run:
           command: |
             python3 -m venv venv
             . venv/bin/activate
             pip install -r requirements.txt
+      - run:
+          name: Setup common environment variables
+          command: |
+            echo 'export ECR_REPOSITORY_NAME="python_rest_api"' >> $BASH_ENV
+            echo 'export FULL_IMAGE_NAME="784881644238.dkr.ecr.us-east-2.amazonaws.com/${ECR_REPOSITORY_NAME}:${CIRCLE_BRANCH}_latest"' >> $BASH_ENV
+      - run:
+          name: Build image
+          command: |
+            docker build -t $FULL_IMAGE_NAME .
+      - run:
+          name: Save image to an archive
+          command: |
+            mkdir docker-image
+            docker save -o docker-image/image.tar $FULL_IMAGE_NAME
+      - persist_to_workspace:
+          root: .
+          paths:
+            - docker-image
+            - venv
+  deploy:  
+    docker:
+      - image: circleci/python:3.6.1
+    environment:
+      AWS_DEFAULT_OUTPUT: json
+    steps:
+      - checkout
+      - setup_remote_docker
+      - attach_workspace:
+          at: workspace
+      - restore_cache:
+          key: v1-{{ checksum "requirements.txt" }}
+      - run:
+          name: Install awscli
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r requirements.txt
       - save_cache:
-          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
+          key: v1-{{ checksum "requirements.txt" }}
           paths:
             - "venv"
-
+      - run:
+          name: Load image
+          command: |
+            docker load --input workspace/docker-image/image.tar
+      - run:
+          name: Setup common environment variables
+          command: |
+            echo 'export ECR_REPOSITORY_NAME="python_rest_api"' >> $BASH_ENV
+            echo 'export ECS_CLUSTER_NAME="PythonRestApiProdClus"' >> $BASH_ENV
+            echo 'export ECS_SERVICE_NAME="python_api_service"' >> $BASH_ENV
+      - run:
+          name: Push image
+          command: |
+            . venv/bin/activate
+            eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
+            docker push 784881644238.dkr.ecr.us-east-2.amazonaws.com/$ECR_REPOSITORY_NAME:$CIRCLE_BRANCH_latest
+      - run:
+          name: Deploy
+          command: |
+            . venv/bin/activate
+            export ECS_TASK_FAMILY_NAME="python_api_task_definition"
+            export ECS_CONTAINER_DEFINITION_NAME="python_api_container_prod"
+            export EXECUTION_ROLE_ARN="arn:aws:iam::784881644238:role/circleci_role"
+            ./deploy.sh
+     
 workflows:
   version: 2
-  test-and-build:
+  build-deploy:
     jobs:
-      - test-and-build
-      - aws-ecr/build-and-push-image:
-          repo: "python_rest_api"
-          tag: "${CIRCLE_BRANCH}_latest"
+      - build
+      - deploy:
           requires:
-            - test-and-build
-          filters:
-            branches:
-              only:
-                - main
-                - develop
-      - aws-ecs/deploy-service-update:
-          name: deploy-development
-          requires:
-            - aws-ecr/build-and-push-image
-          family: "python_api_task_definition"
-          cluster-name: "PythonRestApiProdClus"
-          service-name: "python_api_service"
-          container-image-name-updates: "container=python_api_container_prod,tag=${CIRCLE_BRANCH}_latest"
-          filters:
-            branches:
-              only:
-                - develop
-      - aws-ecs/deploy-service-update:
-          name: deploy-staging
-          requires:
-            - aws-ecr/build-and-push-image
-          family: "python_api_task_definition"
-          cluster-name: "PythonRestApiProdClus"
-          service-name: "python_api_service"
-          container-image-name-updates: "container=python_api_container_prod,tag=${CIRCLE_BRANCH}_latest"
-          filters:
-            branches:
-              only:
-                - main
-      - approve-deploy:
-          type: approval
-          requires:
-            - aws-ecr/build-and-push-image
-          filters:
-            branches:
-              only:
-                - main
-      - aws-ecs/deploy-service-update:
-          name: deploy-production
-          requires:
-            - approve-deploy
-          family: "python_api_task_definition"
-          cluster-name: "PythonRestApiProdClus"
-          service-name: "python_api_service"
-          container-image-name-updates: "container=python_api_container_prod,tag=${CIRCLE_BRANCH}_latest"
-          filters:
-            branches:
-              only:
-                - main
+            - build

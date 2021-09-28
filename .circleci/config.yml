@@ -40,9 +40,41 @@ workflows:
                 - main
                 - develop
       - aws-ecs/deploy-service-update:
-          name: deploy-production
+          name: deploy-development
           requires:
             - aws-ecr/build-and-push-image
+          family: "python_rest_api_task"
+          cluster-name: "PythonRestApiProdClus"
+          service-name: "python_rest_api_service"
+          container-image-name-updates: "container=python_rest_api_container_prod,tag=${CIRCLE_BRANCH}_latest"
+          filters:
+            branches:
+              only:
+                - develop
+      - aws-ecs/deploy-service-update:
+          name: deploy-staging
+          requires:
+            - aws-ecr/build-and-push-image
+          family: "python_rest_api_task"
+          cluster-name: "PythonRestApiProdClus"
+          service-name: "python_rest_api_service"
+          container-image-name-updates: "container=python_rest_api_container_prod,tag=${CIRCLE_BRANCH}_latest"
+          filters:
+            branches:
+              only:
+                - main
+      - approve-deploy:
+          type: approval
+          requires:
+            - aws-ecr/build-and-push-image
+          filters:
+            branches:
+              only:
+                - main
+      - aws-ecs/deploy-service-update:
+          name: deploy-production
+          requires:
+            - approve-deploy
           family: "python_rest_api_task"
           cluster-name: "PythonRestApiProdClus"
           service-name: "python_rest_api_service"

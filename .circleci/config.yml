@@ -31,7 +31,7 @@ workflows:
       - test-and-build-dev
       - aws-ecr/build-and-push-image:
           repo: "python_rest_api"
-          tag: "${CIRCLE_BRANCH}_${CIRCLE_SHA1},${CIRCLE_BRANCH}_latest"
+          tag: "${CIRCLE_BRANCH}_latest"
           requires:
             - test-and-build-dev
           filters:

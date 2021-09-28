@@ -8,21 +8,27 @@ orbs:
   aws-ecr: circleci/aws-ecr@6.9.1
   aws-ecs: circleci/aws-ecs@1.2.0
 jobs:
-  test-and-build-dev:
+  test-and-build-dev:`
     docker:
-      - image: python:3.8
+      - image: circleci/python:3.8
         environment:
           MIX_ENV: dev
     working_directory: ~/repo
     steps:
       - checkout
-      - setup_remote_docker:
-          version: 19.03.13
+      - restore_cache:
+         key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
 
       # build and push Docker image
-      - run: |
-          TAG=0.1.$CIRCLE_BUILD_NUM
-          docker build -t CircleCI-Public/circleci-demo-docker:$TAG .
+      - run:
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r requirements.txt
+      - save_cache:
+          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
+          paths:
+            - "venv"
 
 workflows:
   version: 2

@@ -51,10 +51,10 @@ workflows:
             branches:
               only:
                 - develop
-      - aws-ecs/update-service:
+      - aws-ecs/deploy-service-update:
           name: deploy-staging
           requires:
-            - aws-ecs/deploy-service-update
+            - aws-ecr/build-and-push-image
           family: "python_rest_api-service"
           cluster-name: "PythonRestApiProdClus"
           service-name: "python_rest_api-service"

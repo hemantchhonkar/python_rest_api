@@ -43,7 +43,7 @@ workflows:
           name: deploy-development
           requires:
             - aws-ecr/build-and-push-image
-          family: "python_task"
+          family: " python-task-2"
           cluster-name: "python-cluster"
           service-name: "python_api_service"
           container-image-name-updates: "container=python_container,tag=${CIRCLE_BRANCH}_latest"
@@ -55,7 +55,7 @@ workflows:
           name: deploy-staging
           requires:
             - aws-ecr/build-and-push-image
-          family: "python_task"
+          family: " python-task-2"
           cluster-name: "python-cluster"
           service-name: "python_api_service"
           container-image-name-updates: "container=python_container,tag=${CIRCLE_BRANCH}_latest"
@@ -75,7 +75,7 @@ workflows:
           name: deploy-production
           requires:
             - approve-deploy
-          family: "python_task"
+          family: " python-task-2"
           cluster-name: "python-cluster"
           service-name: "python_api_service"
           container-image-name-updates: "container=python_container,tag=${CIRCLE_BRANCH}_latest"

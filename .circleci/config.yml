@@ -43,10 +43,10 @@ workflows:
           name: deploy-development
           requires:
             - aws-ecr/build-and-push-image
-          family: "python-api-task"
-          cluster-name: "python-cluster-1"
-          service-name: "python-api-service"
-          container-image-name-updates: "container=python-api-container,tag=${CIRCLE_BRANCH}_latest"
+          family: "api_service"
+          cluster-name: "prod-cluster"
+          service-name: "api_service"
+          container-image-name-updates: "container=api_container,tag=${CIRCLE_BRANCH}_latest"
           filters:
             branches:
               only:
@@ -55,10 +55,10 @@ workflows:
           name: deploy-staging
           requires:
             - aws-ecr/build-and-push-image
-          family: "python-api-task"
-          cluster-name: "python-cluster-1"
-          service-name: "python-api-service"
-          container-image-name-updates: "container=python-api-container,tag=${CIRCLE_BRANCH}_latest"
+          family: "api_service"
+          cluster-name: "prod-cluster"
+          service-name: "api_service"
+          container-image-name-updates: "container=api_container,tag=${CIRCLE_BRANCH}_latest"
           filters:
             branches:
               only:
@@ -75,10 +75,10 @@ workflows:
           name: deploy-production
           requires:
             - approve-deploy
-          family: "python-api-task"
-          cluster-name: "python-cluster-1"
-          service-name: "python-api-service"
-          container-image-name-updates: "container=python-api-container,tag=${CIRCLE_BRANCH}_latest"
+          family: "api_service"
+          cluster-name: "prod-cluster"
+          service-name: "api_service"
+          container-image-name-updates: "container=api_container,tag=${CIRCLE_BRANCH}_latest"
           filters:
             branches:
               only:

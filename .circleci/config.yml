@@ -31,7 +31,7 @@ workflows:
       - test-and-build
       - aws-ecr/build-and-push-image:
           repo: "python_rest_api"
-          tag: "${CIRCLE_BRANCH}"
+          tag: "${CIRCLE_BRANCH}_latest"
           requires:
             - test-and-build
           filters:
@@ -39,4 +39,47 @@ workflows:
               only:
                 - main
                 - develop
-      
+      - aws-ecs/deploy-service-update:
+          name: deploy-development
+          requires:
+            - aws-ecr/build-and-push-image
+          family: "python_task"
+          cluster-name: "python-cluster"
+          service-name: "python_api_service"
+          container-image-name-updates: "container=python_container,tag=${CIRCLE_BRANCH}_latest"
+          filters:
+            branches:
+              only:
+                - develop
+      - aws-ecs/deploy-service-update:
+          name: deploy-staging
+          requires:
+            - aws-ecr/build-and-push-image
+          family: "python_task"
+          cluster-name: "python-cluster"
+          service-name: "python_api_service"
+          container-image-name-updates: "container=python_container,tag=${CIRCLE_BRANCH}_latest"
+          filters:
+            branches:
+              only:
+                - main
+      - approve-deploy:
+          type: approval
+          requires:
+            - aws-ecr/build-and-push-image
+          filters:
+            branches:
+              only:
+                - main
+      - aws-ecs/deploy-service-update:
+          name: deploy-production
+          requires:
+            - approve-deploy
+          family: "python_task"
+          cluster-name: "python-cluster"
+          service-name: "python_api_service"
+          container-image-name-updates: "container=python_container,tag=${CIRCLE_BRANCH}_latest"
+          filters:
+            branches:
+              only:
+                - main

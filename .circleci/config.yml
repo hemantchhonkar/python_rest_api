@@ -45,7 +45,7 @@ workflows:
             - aws-ecr/build-and-push-image
           family: "python_rest_api-service"
           cluster-name: "PythonRestApiProdClus"
-          service-name: "python_rest_api-service"
+          service-name: "python_rest_api-service-2"
           container-image-name-updates: "container=python_rest_api-service,tag=${CIRCLE_SHA1}"
           filters:
             branches:
@@ -57,7 +57,7 @@ workflows:
             - aws-ecr/build-and-push-image
           family: "python_rest_api-service"
           cluster-name: "PythonRestApiProdClus"
-          service-name: "python_rest_api-service"
+          service-name: "python_rest_api-service-2"
           container-image-name-updates: "container=python_rest_api-service,tag=${CIRCLE_SHA1}"
           force-new-deployment: true
           filters:
@@ -78,7 +78,7 @@ workflows:
             - approve-deploy
           family: "python_rest_api-service"
           cluster-name: "PythonRestApiProdClus"
-          service-name: "python_rest_api-service"
+          service-name: "python_rest_api-service-2"
           container-image-name-updates: "container=python_rest_api-service,tag=${CIRCLE_SHA1}"
           filters:
             branches:

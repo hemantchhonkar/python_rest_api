@@ -56,7 +56,7 @@ workflows:
           requires:
             - aws-ecr/build-and-push-image
           family: "exstores-staging-tsk"
-          cluster-name: "exstores-cls-staging"
+          cluster-name: "exstores-cluster-staging "
           service-name: "exstores-staging-service"
           container-image-name-updates: "container=exstores-staging-container,tag=${CIRCLE_BRANCH}_latest"
           filters:

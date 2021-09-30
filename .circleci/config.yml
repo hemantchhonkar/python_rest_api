@@ -74,8 +74,8 @@ workflows:
       - aws-ecs/deploy-service-update:
           name: deploy-production
           requires:
-            - approve-deploy
-           family: "exstores-production-tsk"
+            - aws-ecr/build-and-push-image
+          family: "exstores-production-tsk"
           cluster-name: "exstores-cluster-production"
           service-name: "exstores-production-service"
           container-image-name-updates: "container=exstores-production-container,tag=${CIRCLE_BRANCH}_latest"

@@ -59,4 +59,4 @@ register_definition() {
 
 }
 
-deploy_cluster
+deploy_cluster1

@@ -39,3 +39,27 @@ workflows:
               only:
                 - main
                 - develop
+      - aws-ecs/deploy-service-update:
+          name: deploy-development
+          requires:
+            - aws-ecr/build-and-push-image
+          family: "api_service"
+          cluster-name: "prod-cluster"
+          service-name: "api_service"
+          container-image-name-updates: "container=api_container,tag=${CIRCLE_BRANCH}_latest"
+          filters:
+            branches:
+              only:
+                - develop
+      - aws-ecs/deploy-service-update:
+          name: deploy-staging
+          requires:
+            - aws-ecr/build-and-push-image
+          family: "exstores-staging-task"
+          cluster-name: "exstores-cls-staging"
+          service-name: "exstores-staging-service"
+          container-image-name-updates: "container=exstores-staging-container,tag=${CIRCLE_BRANCH}_latest"
+          filters:
+            branches:
+              only:
+                - main
